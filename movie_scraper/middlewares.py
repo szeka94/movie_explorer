@@ -6,6 +6,7 @@
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.http import FormRequest
 
 
 class MovieScraperSpiderMiddleware(object):
@@ -56,10 +57,14 @@ class MovieScraperSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class MovieScraperDownloaderMiddleware(object):
+class CaptchaSolverDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
+
+    previous = 0
+    post_data = dict()
+    post_data['submit'] = 'Ok'
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -79,15 +84,6 @@ class MovieScraperDownloaderMiddleware(object):
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
         return None
-
-    def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
-        return response
 
     def process_exception(self, request, exception, spider):
         # Called when a download handler or a process_request()

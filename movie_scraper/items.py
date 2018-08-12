@@ -8,7 +8,7 @@
 import scrapy
 
 
-class Item(scrapy.Item):
+class MovieItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field()
     name_en = scrapy.Field()
@@ -16,8 +16,10 @@ class Item(scrapy.Item):
     categories = scrapy.Field()
     director = scrapy.Field()
     actors = scrapy.Field()
-    links = scrapy.Field()
     image_path = scrapy.Field()
     vendor_url = scrapy.Field()
     vendor_name = scrapy.Field()
     vendor_id = scrapy.Field()
+    links = scrapy.Field()
+    is_series = scrapy.Field()
+    timestamp = scrapy.Field()
