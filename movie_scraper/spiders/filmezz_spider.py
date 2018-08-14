@@ -118,8 +118,9 @@ class FilmezzSpider(scrapy.Spider):
             session.headers.pop('Accept-Encoding')
             resp_img = session.get('http://filmezz.eu/captchaimg.php')
             im = Image.open(io.BytesIO(resp_img.content))
-            text = pytesseract.image_to_string(im)
-            text = text.replace(':', '') \
+            text = pytesseract.image_to_string(im, lang='eng', config='--psm 7')
+            text = text.strip() \
+                       .replace(':', '') \
                        .replace('O', '0')
             result = sum([int(num) for num in text.split('+')])
             form_data = {'captcha': result}

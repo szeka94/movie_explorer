@@ -15,17 +15,22 @@ class CleaningPipeline(object):
         'categories',
         'links',
     ]
+    LIST_FIELDS = [
+        'actors',
+        'categories'
+    ]
+    DO_NOT_CLEAN_FIELDS = ['links', 'is_series']
 
     def process_item(self, item, spider):
+        item = self.clean_item(item)
+        item = self.json_format_fields(item)
         return item
 
     def clean_item(self, item):
-        LIST_FIELDS = [
-            'actors',
-            'categories'
-        ]
         for key, value in item.items():
-            if key in LIST_FIELDS:
+            if key in self.DO_NOT_CLEAN_FIELDS:
+                continue
+            if key in self.LIST_FIELDS:
                 item[key] = [self._clean_unicode(data) for data in value]
             else:
                 item[key] = self._clean_unicode(value)
@@ -33,11 +38,11 @@ class CleaningPipeline(object):
 
     @staticmethod
     def _clean_unicode(data):
-        data = data.split()
+        data = data.strip()
         return data
 
     @classmethod
-    def _json_format_fields(cls, item):
+    def json_format_fields(cls, item):
         for field in cls.JSON_FIELDS:
             data = item[field]
             item[field] = json.dumps(data)
@@ -47,7 +52,3 @@ class CleaningPipeline(object):
     def _add_timestamp(item):
         item['timestamp'] = datetime.now()
         return item
-
-    @staticmethod
-    def _clean_links(links):
-        pass
