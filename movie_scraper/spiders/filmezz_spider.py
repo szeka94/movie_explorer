@@ -43,7 +43,6 @@ class FilmezzSpider(scrapy.Spider):
         item['image_path'] = container.css('img::attr(src)').extract_first(default='n/a')
         item['vendor_id'] = response.url.split('?n=')[-1]
         desc = container.css('div.description')
-        # if desc:
         titles = container.css('div.title')
         if titles:
             titles = titles[0]
@@ -51,11 +50,6 @@ class FilmezzSpider(scrapy.Spider):
             item['name_en'] = titles.css('h2::text').extract_first(default='n/a')
             item['description'] = desc[0].css('div.text::text').extract_first(default='n/a')
             item['categories'] = desc.css('ul.list-inline.category li a::text').extract()
-        # else:
-        #     item['name'] = 'n/a'
-        #     item['name_en'] = 'n/a'
-        #     item['description'] = 'n/a'
-        #     item['categories'] = []
         aside = response.css('aside div.sidebar-article.details')
         if aside:
             aside = aside[0]
@@ -69,6 +63,7 @@ class FilmezzSpider(scrapy.Spider):
                                          section.content-box
                                          ul.list-unstyled.table-horizontal.url-list""")
         if not link_container:
+            # if cannot scrape links, continue
             return
         else:
             link_container = link_container[0]
@@ -82,6 +77,7 @@ class FilmezzSpider(scrapy.Spider):
         is_series = None
         collected_links = dict()
         for link in links:
+            lang = link.css('ul li::attr(title)').extract_first()
             link_host_container = [data.strip() for data in link[0].css('::text').extract()
                                    if data.strip()]
             episode = link[2].css('::text').extract_first().strip()
@@ -97,12 +93,12 @@ class FilmezzSpider(scrapy.Spider):
             if is_series:
                 same_episode = collected_links.get(episode, {})
                 link_list = same_episode.get(host_name, [])
-                link_list.append(movie_url)
+                link_list.append((movie_url, lang))
                 same_episode[host_name] = link_list
                 collected_links[episode] = same_episode
             else:
                 link_list = collected_links.get(host_name, [])
-                link_list.append(movie_url)
+                link_list.append((movie_url, lang))
                 collected_links[host_name] = link_list
         return collected_links, is_series
 
