@@ -23,3 +23,4 @@ class MovieItem(scrapy.Item):
     links = scrapy.Field()
     is_series = scrapy.Field()
     timestamp = scrapy.Field()
+    imdb_score = scrapy.Field()
