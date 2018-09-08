@@ -56,6 +56,7 @@ class FilmezzSpider(scrapy.Spider):
             director, actors = aside.css('ul.list-unstyled')
             item['director'] = director.css('li a::text').extract_first(default='n/a')
             item['actors'] = actors.css('li a::text').extract()
+            item['imdb_score'] = aside.css('span.score::text').extract_first()
         else:
             item['director'] = 'n/a'
             item['actors'] = []
@@ -90,6 +91,7 @@ class FilmezzSpider(scrapy.Spider):
                 movie_url = self._get_movie_url(site_link)
             except (ValueError, NotImplementedError) as e:
                 print('ERROR: {}'.format(e))
+                continue
             if is_series:
                 same_episode = collected_links.get(episode, {})
                 link_list = same_episode.get(host_name, [])
@@ -117,7 +119,8 @@ class FilmezzSpider(scrapy.Spider):
             text = pytesseract.image_to_string(im, lang='eng', config='--psm 7')
             text = text.strip() \
                        .replace(':', '') \
-                       .replace('O', '0')
+                       .replace('O', '0') \
+                       .replace('=', '')
             result = sum([int(num) for num in text.split('+')])
             form_data = {'captcha': result}
             resp = session.post(site_link, data=form_data, allow_redirects=False)
