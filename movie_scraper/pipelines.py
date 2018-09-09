@@ -19,7 +19,7 @@ class CleaningPipeline(object):
         'actors',
         'categories'
     ]
-    DO_NOT_CLEAN_FIELDS = ['links', 'is_series']
+    DO_NOT_CLEAN_FIELDS = ['links', 'is_series', 'imdb_score']
 
     def process_item(self, item, spider):
         item = self.clean_item(item)
